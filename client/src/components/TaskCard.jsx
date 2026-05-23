@@ -1,9 +1,9 @@
 import { CalendarDays, AlertCircle } from 'lucide-react';
 
 const priorityConfig = {
-  high: { label: 'High', cls: 'bg-rose-50 text-rose-600 border-rose-200' },
-  medium: { label: 'Med', cls: 'bg-amber-50 text-amber-600 border-amber-200' },
-  low: { label: 'Low', cls: 'bg-emerald-50 text-emerald-600 border-emerald-200' },
+  high:   { label: 'High',   badge: 'bg-rose-50 text-rose-600 border-rose-200',   border: 'border-l-rose-500' },
+  medium: { label: 'Med',    badge: 'bg-amber-50 text-amber-600 border-amber-200', border: 'border-l-amber-400' },
+  low:    { label: 'Low',    badge: 'bg-emerald-50 text-emerald-600 border-emerald-200', border: 'border-l-emerald-400' },
 };
 
 function initials(name) {
@@ -22,46 +22,44 @@ function formatDate(dateStr) {
 }
 
 export default function TaskCard({ task, onClick }) {
-  const priority = priorityConfig[task.priority] || priorityConfig.medium;
+  const p = priorityConfig[task.priority] || priorityConfig.medium;
   const overdue = isOverdue(task.due_date, task.status);
 
   return (
     <div
       onClick={() => onClick(task)}
-      className="bg-white border border-gray-200 rounded-lg p-3 cursor-pointer hover:shadow-md hover:border-gray-300 transition-all group"
+      className={`bg-white border border-gray-200 border-l-4 ${p.border} rounded-xl p-3.5 cursor-pointer hover:shadow-md hover:border-gray-300 hover:-translate-y-0.5 transition-all group`}
     >
-      <div className="flex items-start justify-between gap-2 mb-1.5">
-        <h4 className="text-sm font-medium text-gray-900 line-clamp-2 leading-snug">{task.title}</h4>
-        <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded border shrink-0 ${priority.cls}`}>
-          {priority.label}
+      <div className="flex items-start justify-between gap-2 mb-2">
+        <h4 className="text-sm font-semibold text-gray-800 line-clamp-2 leading-snug">{task.title}</h4>
+        <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md border shrink-0 ${p.badge}`}>
+          {p.label}
         </span>
       </div>
 
       {task.description && (
-        <p className="text-xs text-gray-500 line-clamp-1 mb-2">{task.description}</p>
+        <p className="text-xs text-gray-400 line-clamp-1 mb-2.5 leading-relaxed">{task.description}</p>
       )}
 
-      <div className="flex items-center justify-between mt-2">
-        <div className="flex items-center gap-1.5">
-          {task.due_date && (
-            <span
-              className={`flex items-center gap-1 text-[11px] ${
-                overdue ? 'text-rose-500 font-medium' : 'text-gray-400'
-              }`}
-            >
-              {overdue ? <AlertCircle size={11} /> : <CalendarDays size={11} />}
-              {formatDate(task.due_date)}
-            </span>
-          )}
-        </div>
+      <div className="flex items-center justify-between mt-2.5 pt-2.5 border-t border-gray-50">
+        {task.due_date ? (
+          <span className={`flex items-center gap-1 text-[11px] font-medium ${overdue ? 'text-rose-500' : 'text-gray-400'}`}>
+            {overdue ? <AlertCircle size={11} /> : <CalendarDays size={11} />}
+            {overdue ? 'Overdue' : formatDate(task.due_date)}
+          </span>
+        ) : (
+          <span />
+        )}
 
-        {task.assignee_name && (
+        {task.assignee_name ? (
           <div
             title={task.assignee_name}
-            className="w-6 h-6 rounded-full bg-indigo-100 text-indigo-700 text-[10px] font-semibold flex items-center justify-center shrink-0"
+            className="w-6 h-6 rounded-full bg-indigo-100 text-indigo-600 text-[10px] font-bold flex items-center justify-center ring-2 ring-white shrink-0"
           >
             {initials(task.assignee_name)}
           </div>
+        ) : (
+          <div className="w-6 h-6 rounded-full border-2 border-dashed border-gray-200 shrink-0" title="Unassigned" />
         )}
       </div>
     </div>
